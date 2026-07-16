@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BES EXOTIC FARM — Manajemen Peternakan & Silsilah</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{colors:{fm:{dark:'#0C1A0C',side:'#132613',sideHover:'#1B3A1B',page:'#EDE8DD',card:'#FAFAF6',accent:'#C8963E',accentH:'#A87A28',accentL:'#F5E6C8',gd:'#1B4332',gm:'#2D6A4F',gl:'#40916C',txt:'#1A1A14',muted:'#7A7568',bdr:'#D4CFC4',danger:'#B83232',dangerL:'#FDE8E8',ok:'#2D7A3A',okL:'#E6F4EA',warn:'#B8860B',warnL:'#FFF8E1'}},fontFamily:{display:['DM Serif Display','serif'],body:['DM Sans','sans-serif']}}}}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#EDE8DD;color:#1A1A14;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#C8963E55;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#C8963E88}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:linear-gradient(180deg,#132613 0%,#0C1A0C 100%);z-index:40;transition:transform .3s ease;display:flex;flex-direction:column;overflow-y:auto}
+#sidebar .logo-area{padding:24px 20px;border-bottom:1px solid #1B433244}
+#sidebar nav{flex:1;padding:12px 0}
+#sidebar nav a{display:flex;align-items:center;gap:12px;padding:12px 20px;color:#9CAF9C;font-size:14px;font-weight:500;transition:all .2s;border-left:3px solid transparent;cursor:pointer;text-decoration:none}
+#sidebar nav a:hover{background:#1B3A1B;color:#E0E8D8}
+#sidebar nav a.active{color:#C8963E;background:#1B3A1B88;border-left-color:#C8963E}
+#sidebar nav a i{width:20px;text-align:center;font-size:15px}
+#sidebar .side-footer{padding:16px 20px;border-top:1px solid #1B433244;color:#5A7A5A;font-size:11px}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:35;opacity:0;pointer-events:none;transition:opacity .3s}
+#overlay.active{opacity:1;pointer-events:auto}
+#main{margin-left:260px;min-height:100vh;transition:margin .3s}
+#topbar{position:sticky;top:0;z-index:20;background:#FAFAF6ee;backdrop-filter:blur(10px);border-bottom:1px solid #D4CFC4;padding:16px 28px;display:flex;align-items:center;gap:16px}
+#topbar h1{font-family:'DM Serif Display',serif;font-size:22px;color:#1B4332}
+#content{padding:24px 28px 60px}
+.stat-card{background:#FAFAF6;border:1px solid #D4CFC4;border-radius:14px;padding:20px;transition:all .25s;position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px #1B433215}
+.stat-card .stat-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.stat-card .stat-num{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.1}
+.stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;opacity:.06}
+.data-card{background:#FAFAF6;border:1px solid #D4CFC4;border-radius:14px;overflow:hidden}
+.data-card .card-head{padding:16px 20px;border-bottom:1px solid #D4CFC4;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.data-card .card-body{padding:0}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.dt{width:100%;border-collapse:collapse;font-size:13px}
+table.dt th{background:#F0ECE2;padding:10px 14px;text-align:left;font-weight:600;color:#1B4332;white-space:nowrap;border-bottom:2px solid #D4CFC4}
+table.dt td{padding:10px 14px;border-bottom:1px solid #EDE8DD;vertical-align:middle}
+table.dt tr:hover td{background:#F5E6C833}
+table.dt .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:#C8963E;color:#fff}.btn-primary:hover{background:#A87A28}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+.btn-danger{background:#B83232;color:#fff}.btn-danger:hover{background:#922828}
+.btn-outline{background:transparent;border:1.5px solid #D4CFC4;color:#1A1A14}.btn-outline:hover{border-color:#C8963E;color:#C8963E}
+#modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+#modal-bg.active{display:flex}
+#modal-box{background:#FAFAF6;border-radius:16px;width:100%;max-width:680px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#modal-head{padding:18px 22px;border-bottom:1px solid #D4CFC4;display:flex;align-items:center;justify-content:space-between}
+#modal-head h3{font-family:'DM Serif Display',serif;font-size:18px;color:#1B4332}
+#modal-close{width:32px;height:32px;border-radius:8px;border:none;background:transparent;cursor:pointer;font-size:18px;color:#7A7568;display:flex;align-items:center;justify-content:center;transition:all .2s}
+#modal-close:hover{background:#FDE8E8;color:#B83232}
+#modal-body{padding:22px;max-height:68vh;overflow-y:auto}
+#modal-foot{padding:14px 22px;border-top:1px solid #D4CFC4;display:flex;justify-content:flex-end;gap:8px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:12px;font-weight:600;color:#1B4332;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1.5px solid #D4CFC4;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;background:#fff;color:#1A1A14;transition:border .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#C8963E;box-shadow:0 0 0 3px #C8963E22}
+.fg textarea{resize:vertical;min-height:60px}
+.fg .err{color:#B83232;font-size:11px;margin-top:3px;display:none}
+.fg.has-err input,.fg.has-err select{border-color:#B83232}
+.fg.has-err .err{display:block}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#toasts{position:fixed;top:20px;right:20px;z-index:60;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;color:#fff;pointer-events:auto;animation:toastIn .3s ease,toastOut .3s ease 2.7s forwards;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.toast-ok{background:#2D7A3A}.toast-err{background:#B83232}.toast-warn{background:#B8860B}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+.foto-wrap{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.foto-upload{border:2px dashed #D4CFC4;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;background:#FAFAF6}
+.foto-upload:hover{border-color:#C8963E;background:#F5E6C844}
+.foto-upload img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.foto-upload .remove-foto{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:rgba(184,50,50,.9);color:#fff;border:2px solid #fff;cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;z-index:2;transition:transform .15s}
+.foto-upload .remove-foto:hover{transform:scale(1.15)}
+.foto-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7A7568;pointer-events:none}
+.foto-thumb{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #EDE8DD;flex-shrink:0}
+.foto-thumb-empty{width:38px;height:38px;border-radius:50%;background:#E0E8D8;display:flex;align-items:center;justify-content:center;color:#5A7A5A;font-size:13px;flex-shrink:0}
+.pedigree-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:720px;margin:0 auto}
+.ped-line{border:1.5px solid #C8963E;border-radius:10px;padding:8px 6px;background:#fff;text-align:center;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.ped-line.empty{border-style:dashed;background:#FAFAF6;color:#7A7568}
+.ped-line .ring{font-weight:700;font-size:11px;color:#1B4332;line-height:1.2}
+.ped-line .pname{font-size:10px;color:#7A7568}
+.ped-line .pgen{font-size:9px;color:#C8963E;font-weight:600}
+.ped-line .ped-foto{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #C8963E55}
+.ped-line .ped-foto-empty{width:36px;height:36px;border-radius:50%;background:#F0ECE2;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px}
+#cert-wrap{background:#fff;padding:40px;max-width:800px;margin:0 auto;border:3px double #C8963E;border-radius:4px;position:relative}
+#cert-wrap::before{content:'';position:absolute;inset:8px;border:1px solid #C8963E66;border-radius:2px;pointer-events:none}
+.cert-header{text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #C8963E33}
+.cert-header h2{font-family:'DM Serif Display',serif;font-size:24px;color:#1B4332}
+.cert-header p{font-size:12px;color:#7A7568;margin-top:4px}
+.cert-info-row{display:flex;gap:24px;align-items:flex-start;margin-bottom:24px}
+.cert-foto-main{width:140px;height:170px;border-radius:10px;border:2px solid #C8963E;object-fit:cover;flex-shrink:0;background:#f5f5f5}
+.cert-foto-main-empty{width:140px;height:170px;border-radius:10px;border:2px dashed #D4CFC4;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;flex-shrink:0}
+.cert-bird-info{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:13px}
+.cert-bird-info dt{color:#7A7568;font-weight:500}
+.cert-bird-info dd{font-weight:600;color:#1A1A14}
+.cert-ped-table{width:100%;border-collapse:collapse;margin:20px 0;font-size:12px}
+.cert-ped-table th,.cert-ped-table td{border:1px solid #C8963E55;padding:6px 8px;text-align:center;vertical-align:middle}
+.cert-ped-table th{background:#F5E6C8;color:#1B4332;font-weight:600}
+.cert-ped-table .gen-label{background:#F0ECE2;font-weight:600;color:#1B4332;width:90px;text-align:left;font-size:11px}
+.cert-ped-foto{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid #C8963E44}
+.cert-ped-foto-empty{width:32px;height:32px;border-radius:50%;background:#F0ECE2;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px}
+.cert-footer{margin-top:20px;text-align:right;font-size:11px;color:#7A7568}
+.anakan-row{background:#F5E6C844;border:1px solid #C8963E33;border-radius:10px;padding:14px;margin-bottom:10px}
+.anakan-row h4{font-size:13px;font-weight:700;color:#1B4332;margin-bottom:8px}
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0}
+  #topbar{padding:12px 16px}
+  #content{padding:16px}
+  .fg-row{grid-template-columns:1fr}
+  .stat-card .stat-num{font-size:26px}
+  .pedigree-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  #cert-wrap{padding:20px}
+  .cert-info-row{flex-direction:column;align-items:center;text-align:center}
+  .cert-bird-info{grid-template-columns:1fr}
+  #modal-box{margin:10px;max-width:none}
+}
+@media print{
+  body *{visibility:hidden}
+  #cert-wrap,#cert-wrap *{visibility:visible}
+  #cert-wrap{position:absolute;left:0;top:0;width:100%;border:3px double #000;padding:30px}
+  #cert-wrap::before{border-color:#000}
+  .cert-ped-table th,.cert-ped-table td{border-color:#000 !important}
+  .cert-foto-main{border-color:#000 !important}
+  .no-print{display:none !important}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease both}
+.fade-up-1{animation-delay:.05s}.fade-up-2{animation-delay:.1s}.fade-up-3{animation-delay:.15s}.fade-up-4{animation-delay:.2s}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:#2D7A3A;animation:pulse-dot 1.5s infinite}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="logo-area">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-fm-accent flex items-center justify-center text-white text-lg"><i class="fas fa-dove"></i></div>
+      <div>
+        <div class="text-white font-display text-base leading-tight">BES EXOTIC FARM</div>
+        <div class="text-xs" style="color:#5A7A5A">Pedigree System</div>
+      </div>
+    </div>
+  </div>
+  <nav id="nav">
+    <a data-page="dashboard" class="active"><i class="fas fa-th-large"></i>Dashboard</a>
+    <a data-page="burung"><i class="fas fa-dove"></i>Data Indukan</a>
+    <a data-page="silsilah"><i class="fas fa-sitemap"></i>Silsilah Trah</a>
+    <a data-page="penjodohan"><i class="fas fa-heart"></i>Penjodohan</a>
+    <a data-page="produksi"><i class="fas fa-egg"></i>Produksi & Anakan</a>
+    <a data-page="sertifikat"><i class="fas fa-certificate"></i>Sertifikat Silsilah</a>
+  </nav>
+  <div class="side-footer">
+    <div>BES EXOTIC FARM v1.0</div>
+    <div style="color:#3A5A3A;margin-top:2px">Data tersimpan lokal (browser)</div>
+  </div>
+</aside>
+
+<div id="overlay" onclick="toggleSidebar()"></div>
+<div id="main">
+  <header id="topbar">
+    <button class="md:hidden w-9 h-9 rounded-lg border border-fm-bdr flex items-center justify-center text-fm-muted hover:text-fm-accent transition" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <h1 id="page-title">Dashboard</h1>
+  </header>
+  <div id="content"></div>
+</div>
+<div id="toasts"></div>
+<div id="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div id="modal-box">
+    <div id="modal-head"><h3 id="modal-title"></h3><button id="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button></div>
+    <div id="modal-body"></div>
+    <div id="modal-foot" class="no-print"></div>
+  </div>
+</div>
+
+<script>
+/* ===== DATA LAYER ===== */
+var KEYS={burung:'mf_burung',silsilah:'mf_silsilah',pasangan:'mf_pasangan',produksi:'mf_produksi'};
+function gd(k){try{return JSON.parse(localStorage.getItem(k)||'[]');}catch(e){return [];}}
+function sd(k,d){try{localStorage.setItem(k,JSON.stringify(d));}catch(e){toast('Storage penuh! Hapus foto/data lama.','err');}}
+function getBurung(){return gd(KEYS.burung);}
+function setBurung(d){sd(KEYS.burung,d);}
+function getSilsilah(){return gd(KEYS.silsilah);}
+function setSilsilah(d){sd(KEYS.silsilah,d);}
+function getPasangan(){return gd(KEYS.pasangan);}
+function setPasangan(d){sd(KEYS.pasangan,d);}
+function getProduksi(){return gd(KEYS.produksi);}
+function setProduksi(d){sd(KEYS.produksi,d);}
+function findBurung(ring){return getBurung().find(function(b){return b.noRing===ring;});}
+function findSilsilah(ring){return getSilsilah().find(function(s){return s.noRing===ring;});}
+function findPasangan(id){return getPasangan().find(function(p){return p.idKandang===id;});}
+
+/* ===== UTILITAS ===== */
+function fmtDate(d){if(!d)return'-';var p=new Date(d);return p.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});}
+function addDays(d,n){if(!d)return'';var p=new Date(d);p.setDate(p.getDate()+n);return p.toISOString().split('T')[0];}
+function today(){return new Date().toISOString().split('T')[0];}
+function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function genRing(){var list=getBurung().map(function(b){return b.noRing;});var n=1;while(list.indexOf('MB-'+String(n).padStart(3,'0'))>=0)n++;return 'MB-'+String(n).padStart(3,'0');}
+function statusBadge(s){var m={'Siap Ternak':'bg-emerald-100 text-emerald-700','Mengeram':'bg-amber-100 text-amber-700','Mabung':'bg-sky-100 text-sky-700','Anakan':'bg-purple-100 text-purple-700','Terjual':'bg-red-100 text-red-600','Mati':'bg-gray-200 text-gray-500','Proses':'bg-blue-100 text-blue-700','Bertelur':'bg-amber-100 text-amber-700','Bongkar':'bg-red-100 text-red-600'};return '<span class="badge '+(m[s]||'bg-gray-100 text-gray-600')+'">'+esc(s)+'</span>';}
+function jkBadge(jk){return jk==='Jantan'?'<span class="badge bg-sky-100 text-sky-700"><i class="fas fa-mars mr-1"></i>J</span>':'<span class="badge bg-pink-100 text-pink-700"><i class="fas fa-venus mr-1"></i>B</span>';}
+function toast(msg,type){var t=document.createElement('div');t.className='toast toast-'+(type||'ok');t.textContent=msg;document.getElementById('toasts').appendChild(t);setTimeout(function(){t.remove();},3000);}
+
+/* ===== FOTO ===== */
+function compressImage(file,maxW,maxH,quality,cb){
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var w=img.width,h=img.height;
+      if(w>maxW){h=h*maxW/w;w=maxW;}
+      if(h>maxH){w=w*maxH/h;h=maxH;}
+      w=Math.round(w);h=Math.round(h);
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',quality));
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function fotoUploadHtml(hiddenId,size,existingFoto){
+  var hasFoto=existingFoto&&existingFoto.length>10;
+  var previewHtml='';
+  if(hasFoto){
+    previewHtml='<img src="'+existingFoto+'"><button type="button" class="remove-foto" onclick="event.stopPropagation();removeFoto(this)"><i class="fas fa-times"></i></button>';
+  } else {
+    previewHtml='<div class="foto-placeholder"><i class="fas fa-camera" style="font-size:'+Math.max(14,Math.round(size*0.22))+'px"></i><span style="font-size:'+Math.max(8,Math.round(size*0.1))+'px;margin-top:3px">Tambah Foto</span></div>';
+  }
+  return '<div class="foto-wrap"><div class="foto-upload" style="width:'+size+'px;height:'+size+'px" onclick="this.querySelector(\'input[type=file]\').click()"><input type="file" accept="image/*" style="display:none" onchange="handleFotoChange(this)"><input type="hidden" id="'+hiddenId+'" value="'+(hasFoto?existingFoto:'')+'"><div class="foto-preview" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">'+previewHtml+'</div></div><span style="font-size:10px;color:#7A7568">Foto</span></div>';
+}
+
+function handleFotoChange(input){
+  var file=input.files[0];if(!file)return;
+  if(file.size>10*1024*1024){toast('File terlalu besar (maks 10MB)','err');return;}
+  var wrap=input.closest('.foto-upload');
+  compressImage(file,300,300,0.7,function(base64){
+    wrap.querySelector('input[type=hidden]').value=base64;
+    wrap.querySelector('.foto-preview').innerHTML='<img src="'+base64+'"><button type="button" class="remove-foto" onclick="event.stopPropagation();removeFoto(this)"><i class="fas fa-times"></i></button>';
+  });
+  input.value='';
+}
+
+function removeFoto(btn){
+  var wrap=btn.closest('.foto-upload');
+  wrap.querySelector('input[type=hidden]').value='';
+  var size=wrap.offsetWidth;
+  wrap.querySelector('.foto-preview').innerHTML='<div class="foto-placeholder"><i class="fas fa-camera" style="font-size:'+Math.max(14,Math.round(size*0.22))+'px"></i><span style="font-size:'+Math.max(8,Math.round(size*0.1))+'px;margin-top:3px">Tambah Foto</span></div>';
+}
+
+function fotoThumbHtml(foto){
+  if(foto&&foto.length>10)return '<img src="'+foto+'" class="foto-thumb" alt="foto">';
+  return '<div class="foto-thumb-empty"><i class="fas fa-dove"></i></div>';
+}
+
+/* ===== MODAL ===== */
+function openModal(title,bodyHtml,footHtml){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=bodyHtml;
+  document.getElementById('modal-foot').innerHTML=footHtml||'';
+  document.getElementById('modal-bg').classList.add('active');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('active');}
+
+/* ===== NAVIGASI ===== */
+var currentPage='dashboard';
+var pageTitles={dashboard:'Dashboard',burung:'Data Indukan',silsilah:'Silsilah Trah',penjodohan:'Penjodohan Kandang',produksi:'Produksi & Anakan',sertifikat:'Sertifikat Silsilah'};
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('active');}
+function navigateTo(page){
+  currentPage=page;
+  document.getElementById('page-title').textContent=pageTitles[page]||page;
+  var links=document.querySelectorAll('#nav a');
+  for(var i=0;i<links.length;i++){links[i].classList.toggle('active',links[i].dataset.page===page);}
+  renderPage();
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('#nav a').forEach(function(a){a.addEventListener('click',function(){navigateTo(a.dataset.page);});});
+
+function renderPage(){
+  var c=document.getElementById('content');
+  if(currentPage==='dashboard'){c.innerHTML=renderDashboard();animateCounters();}
+  else if(currentPage==='burung'){c.innerHTML=renderBurungPage();}
+  else if(currentPage==='silsilah'){c.innerHTML=renderSilsilahPage();}
+  else if(currentPage==='penjodohan'){c.innerHTML=renderPenjodohanPage();}
+  else if(currentPage==='produksi'){c.innerHTML=renderProduksiPage();}
+  else if(currentPage==='sertifikat'){c.innerHTML=renderSertifikatPage();}
+}
+
+/* ===== DASHBOARD ===== */
+function renderDashboard(){
+  var burung=getBurung(),pasangan=getPasangan(),produksi=getProduksi();
+  var jantan=burung.filter(function(b){return b.jk==='Jantan';}).length;
+  var betina=burung.filter(function(b){return b.jk==='Betina';}).length;
+  var kandangAktif=pasangan.filter(function(p){return p.status==='Proses'||p.status==='Bertelur';}).length;
+  var telurDierami=produksi.filter(function(p){return p.tglMengeram&&!p.tglMenetasAktual;}).reduce(function(s,p){return s+(p.jmlTelur||0);},0);
+  var totalAnakan=burung.filter(function(b){return b.status==='Anakan';}).length;
+  var recentProd=produksi.slice(-5).reverse();
+  var aktifList=pasangan.filter(function(p){return p.status==='Proses'||p.status==='Bertelur';});
+  var kandangRows='';
+  if(aktifList.length===0){kandangRows='<div class="p-6 text-center text-fm-muted text-sm">Belum ada kandang aktif</div>';}
+  else{
+    kandangRows='<div class="tbl-wrap"><table class="dt"><thead><tr><th>Kandang</th><th>Jantan</th><th>Betina</th><th>Status</th></tr></thead><tbody>';
+    for(var i=0;i<aktifList.length;i++){
+      var p=aktifList[i],j=findBurung(p.jantan),b=findBurung(p.betina);
+      kandangRows+='<tr><td class="font-semibold text-fm-accent">'+esc(p.idKandang)+'</td><td><div class="flex items-center gap-2">'+fotoThumbHtml(j?j.foto:'')+( j?esc(j.nama):'-')+'</div></td><td><div class="flex items-center gap-2">'+fotoThumbHtml(b?b.foto:'')+(b?esc(b.nama):'-')+'</div></td><td>'+statusBadge(p.status)+'</td></tr>';
+    }
+    kandangRows+='</tbody></table></div>';
+  }
+  var prodRows='';
+  if(recentProd.length===0){prodRows='<div class="p-6 text-center text-fm-muted text-sm">Belum ada data produksi</div>';}
+  else{
+    prodRows='<div class="tbl-wrap"><table class="dt"><thead><tr><th>Kandang</th><th>Siklus</th><th>Telur</th><th>Menetas</th><th>Status</th></tr></thead><tbody>';
+    for(var i=0;i<recentProd.length;i++){
+      var pr=recentProd[i];
+      var st=!pr.tglMenetasAktual?'<span class="badge bg-amber-100 text-amber-700">Mengeram</span>':'<span class="badge bg-emerald-100 text-emerald-700">Selesai</span>';
+      prodRows+='<tr><td class="font-semibold text-fm-accent">'+esc(pr.idKandang)+'</td><td>'+pr.siklusKe+'</td><td>'+( pr.jmlTelur||0)+' butir</td><td>'+(pr.jmlMenetas||0)+' ekor</td><td>'+st+'</td></tr>';
+    }
+    prodRows+='</tbody></table></div>';
+  }
+  return '<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">'
+    +'<div class="stat-card fade-up fade-up-1"><div class="flex items-center gap-3 mb-3"><div class="stat-icon bg-sky-100 text-sky-600"><i class="fas fa-mars"></i></div><span class="text-xs font-semibold text-fm-muted uppercase tracking-wide">Jantan</span></div><div class="stat-num text-fm-gd" data-count="'+jantan+'">0</div><div class="text-xs text-fm-muted mt-1">ekor indukan</div></div>'
+    +'<div class="stat-card fade-up fade-up-2"><div class="flex items-center gap-3 mb-3"><div class="stat-icon bg-pink-100 text-pink-600"><i class="fas fa-venus"></i></div><span class="text-xs font-semibold text-fm-muted uppercase tracking-wide">Betina</span></div><div class="stat-num text-fm-gd" data-count="'+betina+'">0</div><div class="text-xs text-fm-muted mt-1">ekor indukan</div></div>'
+    +'<div class="stat-card fade-up fade-up-3"><div class="flex items-center gap-3 mb-3"><div class="stat-icon bg-amber-100 text-amber-600"><i class="fas fa-home"></i></div><span class="text-xs font-semibold text-fm-muted uppercase tracking-wide">Kandang Aktif</span></div><div class="stat-num text-fm-accent" data-count="'+kandangAktif+'">0</div><div class="text-xs text-fm-muted mt-1">pasangan</div></div>'
+    +'<div class="stat-card fade-up fade-up-4"><div class="flex items-center gap-3 mb-3"><div class="stat-icon bg-orange-100 text-orange-600"><i class="fas fa-egg"></i></div><span class="text-xs font-semibold text-fm-muted uppercase tracking-wide">Telur Dierami</span></div><div class="stat-num text-fm-accent" data-count="'+telurDierami+'">0</div><div class="text-xs text-fm-muted mt-1">butir</div></div>'
+    +'<div class="stat-card fade-up col-span-2 lg:col-span-1"><div class="flex items-center gap-3 mb-3"><div class="stat-icon bg-emerald-100 text-emerald-600"><i class="fas fa-baby"></i></div><span class="text-xs font-semibold text-fm-muted uppercase tracking-wide">Anakan</span></div><div class="stat-num text-fm-gm" data-count="'+totalAnakan+'">0</div><div class="text-xs text-fm-muted mt-1">ekor</div></div>'
+    +'</div>'
+    +'<div class="grid lg:grid-cols-2 gap-6">'
+    +'<div class="data-card fade-up fade-up-2"><div class="card-head"><div class="flex items-center gap-2"><div class="pulse-dot"></div><span class="font-semibold text-fm-gd text-sm">Kandang Aktif</span></div><button class="btn btn-sm btn-outline" onclick="navigateTo(\'penjodohan\')"><i class="fas fa-arrow-right"></i>Lihat</button></div><div class="card-body">'+kandangRows+'</div></div>'
+    +'<div class="data-card fade-up fade-up-3"><div class="card-head"><span class="font-semibold text-fm-gd text-sm">Produksi Terbaru</span><button class="btn btn-sm btn-outline" onclick="navigateTo(\'produksi\')"><i class="fas fa-arrow-right"></i>Lihat</button></div><div class="card-body">'+prodRows+'</div></div>'
+    +'</div>'
+    +'<div class="data-card mt-6 fade-up fade-up-4"><div class="card-head"><span class="font-semibold text-fm-gd text-sm">Distribusi Jenis Murai Batu</span></div><div class="card-body p-4">'+renderJenisChart(burung)+'</div></div>';
+}
+function renderJenisChart(burung){
+  var jl=['Medan','Nias','Balak','Lahat','Aceh','Kalimantan','Lainnya'];
+  var counts=[];for(var i=0;i<jl.length;i++){var n=burung.filter(function(b){return b.jenisMurai===jl[i];}).length;if(n>0)counts.push({j:jl[i],n:n});}
+  if(!counts.length)return '<div class="text-center text-fm-muted text-sm py-4">Belum ada data</div>';
+  var max=Math.max.apply(null,counts.map(function(c){return c.n;}));
+  var colors=['#1B4332','#2D6A4F','#40916C','#52B788','#74C69D','#95D5B2','#C8963E'];
+  var html='<div class="flex flex-wrap gap-3">';
+  for(var i=0;i<counts.length;i++){html+='<div class="flex-1 min-w-[120px]"><div class="flex justify-between text-xs mb-1"><span class="font-semibold">'+counts[i].j+'</span><span class="text-fm-muted">'+counts[i].n+' ekor</span></div><div class="h-3 rounded-full bg-gray-200 overflow-hidden"><div class="h-full rounded-full transition-all duration-700" style="width:'+(max?counts[i].n/max*100:0)+'%;background:'+colors[i%colors.length]+'"></div></div></div>';}
+  return html+'</div>';
+}
+function animateCounters(){
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    var target=parseInt(el.dataset.count);var cur=0;var step=Math.max(1,Math.ceil(target/30));
+    var iv=setInterval(function(){cur+=step;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur;},30);
+  });
+}
+
+/* ===== DATA INDUKAN ===== */
+function renderBurungPage(){
+  var list=getBurung();
+  return '<div class="flex flex-wrap items-center justify-between gap-3 mb-4"><div class="relative"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-fm-muted text-xs"></i><input id="search-burung" type="text" placeholder="Cari nama / no. ring..." class="pl-8 pr-3 py-2 border border-fm-bdr rounded-lg text-sm w-56 focus:outline-none focus:border-fm-accent" oninput="filterBurungTable()"></div><button class="btn btn-primary" onclick="openBurungForm()"><i class="fas fa-plus"></i>Tambah Indukan</button></div><div class="data-card"><div class="card-body"><div class="tbl-wrap" id="burung-table-wrap">'+renderBurungTable(list)+'</div></div></div>';
+}
+function renderBurungTable(list){
+  if(!list.length)return '<div class="p-8 text-center text-fm-muted text-sm">Belum ada data indukan.</div>';
+  var html='<table class="dt"><thead><tr><th>Foto</th><th>No. Ring</th><th>Nama</th><th>JK</th><th>Jenis</th><th>Tgl Menetas</th><th>Status</th><th>Catatan</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+  for(var i=0;i<list.length;i++){
+    var b=list[i];
+    html+='<tr><td>'+fotoThumbHtml(b.foto)+'</td><td class="font-semibold text-fm-accent whitespace-nowrap">'+esc(b.noRing)+'</td><td class="font-medium">'+esc(b.nama)+'</td><td>'+jkBadge(b.jk)+'</td><td>'+esc(b.jenisMurai)+'</td><td class="whitespace-nowrap">'+fmtDate(b.tglMenetas)+'</td><td>'+statusBadge(b.status)+'</td><td class="max-w-[120px] truncate text-xs text-fm-muted" title="'+esc(b.catatan)+'">'+(esc(b.catatan)||'-')+'</td><td class="no-print whitespace-nowrap"><button class="btn btn-sm btn-outline" onclick="openBurungForm(\''+b.noRing+'\')"><i class="fas fa-pen"></i></button> <button class="btn btn-sm btn-danger" onclick="deleteBurung(\''+b.noRing+'\')"><i class="fas fa-trash"></i></button></td></tr>';
+  }
+  return html+'</tbody></table>';
+}
+function filterBurungTable(){
+  var q=document.getElementById('search-burung').value.toLowerCase();
+  document.getElementById('burung-table-wrap').innerHTML=renderBurungTable(getBurung().filter(function(b){return b.noRing.toLowerCase().indexOf(q)>=0||b.nama.toLowerCase().indexOf(q)>=0;}));
+}
+
+function openBurungForm(ring){
+  var b=ring?findBurung(ring):null;var isEdit=!!b;var nextRing=isEdit?b.noRing:genRing();
+  var body='<div class="flex flex-wrap items-start gap-5 mb-4">'
+    +fotoUploadHtml('f-foto',110,b?b.foto||'':'')
+    +'<div class="flex-1 min-w-[200px]">'
+    +'<div class="fg-row"><div class="fg"><label>No. Ring *</label><input id="f-ring" value="'+(isEdit?esc(b.noRing):esc(nextRing))+'" '+(isEdit?'readonly style="background:#f0ece2"':'')+'><div class="err">No. Ring sudah digunakan</div></div><div class="fg"><label>Nama Burung *</label><input id="f-nama" value="'+(isEdit?esc(b.nama):'')+'"><div class="err">Wajib diisi</div></div></div>'
+    +'<div class="fg-row"><div class="fg"><label>Jenis Kelamin *</label><select id="f-jk"><option value="">-- Pilih --</option><option value="Jantan" '+(isEdit&&b.jk==='Jantan'?'selected':'')+'>Jantan</option><option value="Betina" '+(isEdit&&b.jk==='Betina'?'selected':'')+'>Betina</option></select><div class="err">Wajib dipilih</div></div><div class="fg"><label>Jenis Murai *</label><select id="f-jenis"><option value="">-- Pilih --</option>';
+  var jenisArr=['Medan','Nias','Balak','Lahat','Aceh','Kalimantan','Lainnya'];
+  for(var i=0;i<jenisArr.length;i++){body+='<option value="'+jenisArr[i]+'" '+(isEdit&&b.jenisMurai===jenisArr[i]?'selected':'')+'>'+jenisArr[i]+'</option>';}
+  body+='</select><div class="err">Wajib dipilih</div></div></div></div></div>'
+    +'<div class="fg-row"><div class="fg"><label>Tanggal Menetas</label><input id="f-tgl" type="date" value="'+(isEdit?b.tglMenetas:'')+'"></div><div class="fg"><label>Status</label><select id="f-status">';
+  var stArr=['Siap Ternak','Mengeram','Mabung','Anakan','Terjual','Mati'];
+  for(var i=0;i<stArr.length;i++){body+='<option value="'+stArr[i]+'" '+(isEdit&&b.status===stArr[i]?'selected':'')+'>'+stArr[i]+'</option>';}
+  body+='</select></div></div><div class="fg"><label>Catatan Fisik / Karakter</label><textarea id="f-catatan" rows="2">'+(isEdit?esc(b.catatan):'')+'</textarea></div>';
+  openModal(isEdit?'Edit Data Indukan':'Tambah Indukan Baru',body,'<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveBurung(\''+(ring||'')+'\')">'+(isEdit?'Simpan Perubahan':'Simpan')+'</button>');
+}
+
+function saveBurung(oldRing){
+  var ring=document.getElementById('f-ring').value.trim();
+  var nama=document.getElementById('f-nama').value.trim();
+  var jk=document.getElementById('f-jk').value;
+  var jenis=document.getElementById('f-jenis').value;
+  var tgl=document.getElementById('f-tgl').value;
+  var status=document.getElementById('f-status').value;
+  var catatan=document.getElementById('f-catatan').value.trim();
+  var foto=document.getElementById('f-foto').value;
+  var valid=true;
+  if(!ring||(!oldRing&&getBurung().find(function(b){return b.noRing===ring;}))){document.getElementById('f-ring').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('f-ring').parentElement.classList.remove('has-err');}
+  if(!nama){document.getElementById('f-nama').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('f-nama').parentElement.classList.remove('has-err');}
+  if(!jk){document.getElementById('f-jk').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('f-jk').parentElement.classList.remove('has-err');}
+  if(!jenis){document.getElementById('f-jenis').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('f-jenis').parentElement.classList.remove('has-err');}
+  if(!valid)return;
+  var list=getBurung();var data={noRing:ring,nama:nama,jk:jk,jenisMurai:jenis,tglMenetas:tgl,status:status||'Siap Ternak',catatan:catatan,foto:foto};
+  if(oldRing){
+    var idx=list.findIndex(function(b){return b.noRing===oldRing;});if(idx>=0)list[idx]=data;
+    var sil=getSilsilah();sil.forEach(function(s){if(s.noRing===oldRing)s.noRing=ring;if(s.noRingBapak===oldRing)s.noRingBapak=ring;if(s.noRingIbu===oldRing)s.noRingIbu=ring;});setSilsilah(sil);
+    var pas=getPasangan();pas.forEach(function(p){if(p.jantan===oldRing)p.jantan=ring;if(p.betina===oldRing)p.betina=ring;});setPasangan(pas);
+  }else{list.push(data);}
+  setBurung(list);closeModal();toast(oldRing?'Data indukan diperbarui':'Indukan baru ditambahkan');renderPage();
+}
+
+function deleteBurung(ring){
+  var b=findBurung(ring);if(!b)return;
+  openModal('Hapus Indukan','<div class="text-center py-4"><div class="flex justify-center mb-3">'+fotoThumbHtml(b.foto)+'</div><div class="w-16 h-16 rounded-full bg-red-100 text-red-500 flex items-center justify-center mx-auto mb-3 text-2xl"><i class="fas fa-exclamation-triangle"></i></div><p class="font-semibold text-lg mb-1">Hapus '+esc(b.nama)+'?</p><p class="text-sm text-fm-muted">No. Ring: '+esc(b.noRing)+'</p><p class="text-xs text-red-600 mt-3 bg-red-50 p-3 rounded-lg">Data silsilah, pasangan, dan produksi terkait juga akan dihapus.</p></div>',
+  '<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-danger" onclick="confirmDeleteBurung(\''+ring+'\')">Ya, Hapus</button>');
+}
+function confirmDeleteBurung(ring){
+  setBurung(getBurung().filter(function(b){return b.noRing!==ring;}));
+  setSilsilah(getSilsilah().filter(function(s){return s.noRing!==ring&&s.noRingBapak!==ring&&s.noRingIbu!==ring;}));
+  var pas=getPasangan().filter(function(p){return p.jantan!==ring&&p.betina!==ring;});setPasangan(pas);
+  var ri={};pas.forEach(function(p){ri[p.idKandang]=true;});setProduksi(getProduksi().filter(function(p){return !!ri[p.idKandang];}));
+  closeModal();toast('Data indukan dihapus','warn');renderPage();
+}
+
+/* ===== SILSILAH ===== */
+function renderSilsilahPage(){
+  var sil=getSilsilah();
+  var rows='';
+  if(!sil.length){rows='<div class="p-8 text-center text-fm-muted text-sm">Belum ada data silsilah</div>';}
+  else{
+    rows='<div class="tbl-wrap"><table class="dt"><thead><tr><th>Burung</th><th>No. Ring</th><th>Bapak (Sire)</th><th>Ibu (Dam)</th><th>Gen</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+    for(var i=0;i<sil.length;i++){
+      var s=sil[i],bird=findBurung(s.noRing),bapak=findBurung(s.noRingBapak),ibu=findBurung(s.noRingIbu);
+      rows+='<tr><td><div class="flex items-center gap-2">'+fotoThumbHtml(bird?bird.foto:'')+'<span class="font-medium">'+(bird?esc(bird.nama):'-')+'</span></div></td><td class="font-semibold text-fm-accent">'+esc(s.noRing)+'</td>';
+      rows+='<td>'+(bapak?'<div class="flex items-center gap-2">'+fotoThumbHtml(bapak.foto)+esc(bapak.noRing+' — '+bapak.nama)+'</div>':'<span class="text-fm-muted">-</span>')+'</td>';
+      rows+='<td>'+(ibu?'<div class="flex items-center gap-2">'+fotoThumbHtml(ibu.foto)+esc(ibu.noRing+' — '+ibu.nama)+'</div>':'<span class="text-fm-muted">-</span>')+'</td>';
+      rows+='<td><span class="badge bg-fm-accentL text-fm-accent">'+esc(s.generasi)+'</span></td><td class="no-print"><button class="btn btn-sm btn-outline" onclick="openSilsilahForm(\''+s.noRing+'\')"><i class="fas fa-pen"></i></button> <button class="btn btn-sm btn-danger" onclick="deleteSilsilah(\''+s.noRing+'\')"><i class="fas fa-trash"></i></button></td></tr>';
+    }
+    rows+='</tbody></table></div>';
+  }
+  var burungOpts='';var bList=getBurung();for(var i=0;i<bList.length;i++){burungOpts+='<option value="'+bList[i].noRing+'">'+esc(bList[i].noRing+' — '+bList[i].nama)+'</option>';}
+  return '<div class="flex flex-wrap items-center justify-between gap-3 mb-4"><p class="text-sm text-fm-muted">Atur garis keturunan untuk melacak trah.</p><button class="btn btn-primary" onclick="openSilsilahForm()"><i class="fas fa-plus"></i>Tambah Silsilah</button></div>'
+    +'<div class="data-card mb-6"><div class="card-head"><span class="font-semibold text-fm-gd text-sm">Daftar Silsilah Terdaftar</span></div><div class="card-body">'+rows+'</div></div>'
+    +'<div class="data-card"><div class="card-head"><span class="font-semibold text-fm-gd text-sm">Bagan Silsilah Visual</span></div><div class="card-body p-4"><div class="fg" style="max-width:300px"><label>Pilih Burung</label><select id="ped-select" onchange="renderPedigreeVisual()"><option value="">-- Pilih No. Ring --</option>'+burungOpts+'</select></div><div id="pedigree-visual" class="mt-6"></div></div></div>';
+}
+
+function openSilsilahForm(ring){
+  var s=ring?findSilsilah(ring):null;var isEdit=!!s;
+  var jantans=getBurung().filter(function(b){return b.jk==='Jantan';});
+  var betinas=getBurung().filter(function(b){return b.jk==='Betina';});
+  var body='<div class="fg"><label>Burung (No. Ring) *</label><select id="fs-burung" '+(isEdit?'disabled':'')+'><option value="">-- Pilih Burung --</option>';
+  var bList=getBurung();for(var i=0;i<bList.length;i++){body+='<option value="'+bList[i].noRing+'" '+(isEdit&&s.noRing===bList[i].noRing?'selected':'')+'>'+esc(bList[i].noRing+' — '+bList[i].nama+' ('+bList[i].jk+')')+'</option>';}
+  body+='</select><div class="err">Wajib dipilih</div></div><div class="fg-row"><div class="fg"><label>Bapak / Sire (Jantan)</label><select id="fs-bapak"><option value="">-- Tidak diketahui --</option>';
+  for(var i=0;i<jantans.length;i++){body+='<option value="'+jantans[i].noRing+'" '+(isEdit&&s.noRingBapak===jantans[i].noRing?'selected':'')+'>'+esc(jantans[i].noRing+' — '+jantans[i].nama)+'</option>';}
+  body+='</select></div><div class="fg"><label>Ibu / Dam (Betina)</label><select id="fs-ibu"><option value="">-- Tidak diketahui --</option>';
+  for(var i=0;i<betinas.length;i++){body+='<option value="'+betinas[i].noRing+'" '+(isEdit&&s.noRingIbu===betinas[i].noRing?'selected':'')+'>'+esc(betinas[i].noRing+' — '+betinas[i].nama)+'</option>';}
+  body+='</select></div></div><div class="fg"><label>Generasi Ke-</label><select id="fs-gen">';
+  for(var i=1;i<=8;i++){var g='F'+i;body+='<option value="'+g+'" '+(isEdit&&s.generasi===g?'selected':'')+'>'+g+'</option>';}
+  body+='</select></div><div id="ancestor-info" class="mt-2"></div>';
+  openModal((isEdit?'Edit':'Tambah')+' Silsilah',body,'<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveSilsilah(\''+(ring||'')+'\')">Simpan</button>');
+  setTimeout(function(){
+    var ua=function(){
+      var bapak=document.getElementById('fs-bapak').value,ibu=document.getElementById('fs-ibu').value;var html='';
+      if(bapak){var sb=findSilsilah(bapak);if(sb){var kk=findBurung(sb.noRingBapak),nk=findBurung(sb.noRingIbu);html+='<div class="bg-sky-50 border border-sky-200 rounded-lg p-3 mb-2 text-xs"><strong class="text-sky-800">Kakek P:</strong> '+(kk?esc(kk.noRing+' — '+kk.nama):'Tidak tercatat')+'<br><strong class="text-sky-800">Nenek P:</strong> '+(nk?esc(nk.noRing+' — '+nk.nama):'Tidak tercatat')+'</div>';}}
+      if(ibu){var si=findSilsilah(ibu);if(si){var kk2=findBurung(si.noRingBapak),nk2=findBurung(si.noRingIbu);html+='<div class="bg-pink-50 border border-pink-200 rounded-lg p-3 text-xs"><strong class="text-pink-800">Kakek M:</strong> '+(kk2?esc(kk2.noRing+' — '+kk2.nama):'Tidak tercatat')+'<br><strong class="text-pink-800">Nenek M:</strong> '+(nk2?esc(nk2.noRing+' — '+nk2.nama):'Tidak tercatat')+'</div>';}}
+      if(!html)html='<div class="text-xs text-fm-muted italic">Pilih Bapak/Ibu untuk melihat data kakek/nenek</div>';
+      document.getElementById('ancestor-info').innerHTML=html;
+    };
+    document.getElementById('fs-bapak').addEventListener('change',ua);
+    document.getElementById('fs-ibu').addEventListener('change',ua);ua();
+  },50);
+}
+
+function saveSilsilah(oldRing){
+  var noRing=document.getElementById('fs-burung').value,bapak=document.getElementById('fs-bapak').value,ibu=document.getElementById('fs-ibu').value,gen=document.getElementById('fs-gen').value;
+  if(!noRing){document.getElementById('fs-burung').parentElement.classList.add('has-err');return;}document.getElementById('fs-burung').parentElement.classList.remove('has-err');
+  var list=getSilsilah();
+  if(oldRing){var idx=list.findIndex(function(s){return s.noRing===oldRing;});if(idx>=0)list[idx]={noRing:noRing,noRingBapak:bapak,noRingIbu:ibu,generasi:gen};}
+  else{if(list.find(function(s){return s.noRing===noRing;})){toast('Silsilah sudah ada','err');return;}list.push({noRing:noRing,noRingBapak:bapak,noRingIbu:ibu,generasi:gen});}
+  setSilsilah(list);closeModal();toast(oldRing?'Silsilah diperbarui':'Silsilah ditambahkan');renderPage();
+}
+function deleteSilsilah(ring){
+  openModal('Hapus Silsilah','<div class="text-center py-4"><p class="font-semibold">Hapus silsilah '+esc(ring)+'?</p></div>',
+  '<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-danger" onclick="setSilsilah(getSilsilah().filter(function(s){return s.noRing!==\''+ring+'\';}));closeModal();toast(\'Silsilah dihapus\',\'warn\');renderPage();">Hapus</button>');
+}
+
+function getPedigree(noRing,depth){
+  if(!noRing||depth<0)return null;var bird=findBurung(noRing);if(!bird)return null;
+  var sil=findSilsilah(noRing);
+  return {bird:bird,foto:bird.foto||'',sire:sil&&sil.noRingBapak?getPedigree(sil.noRingBapak,depth-1):null,dam:sil&&sil.noRingIbu?getPedigree(sil.noRingIbu,depth-1):null};
+}
+
+function pedNodeHtml(p,label){
+  if(!p)return '<div class="ped-line empty"><div class="text-xs">'+label+'</div><div class="text-xs text-fm-muted">Tidak tercatat</div></div>';
+  var sil=findSilsilah(p.bird.noRing);
+  var fHtml=(p.foto&&p.foto.length>10)?'<img src="'+p.foto+'" class="ped-foto">':'<div class="ped-foto-empty"><i class="fas fa-dove"></i></div>';
+  return '<div class="ped-line">'+fHtml+'<div class="ring">'+esc(p.bird.noRing)+'</div><div class="pname">'+esc(p.bird.nama)+'</div>'+(sil?'<div class="pgen">'+esc(sil.generasi)+'</div>':'')+'</div>';
+}
+
+function renderPedigreeVisual(){
+  var ring=document.getElementById('ped-select').value;var container=document.getElementById('pedigree-visual');
+  if(!ring){container.innerHTML='';return;}
+  var ped=getPedigree(ring,2);
+  if(!ped){container.innerHTML='<div class="text-center text-fm-muted text-sm py-4">Burung tidak ditemukan</div>';return;}
+  var mainFoto=(ped.foto&&ped.foto.length>10)?'<img src="'+ped.foto+'" class="ped-foto" style="width:44px;height:44px;border-color:#1B4332;border-width:2px">':'<div class="ped-foto-empty" style="width:44px;height:44px"><i class="fas fa-dove"></i></div>';
+  container.innerHTML='<div class="pedigree-grid">'+pedNodeHtml(ped.sire?ped.sire.sire:null,'Kakek P')+pedNodeHtml(ped.sire?ped.sire.dam:null,'Nenek P')+pedNodeHtml(ped.dam?ped.dam.sire:null,'Kakek M')+pedNodeHtml(ped.dam?ped.dam.dam:null,'Nenek M')+'</div>'
+    +'<div class="flex justify-center my-2"><svg width="600" height="30" viewBox="0 0 600 30" style="max-width:100%"><line x1="150" y1="0" x2="150" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="300" y1="0" x2="300" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="450" y1="0" x2="450" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="600" y1="0" x2="600" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="150" y1="15" x2="300" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="225" y1="15" x2="225" y2="30" stroke="#C8963E" stroke-width="1.5"/><line x1="450" y1="15" x2="600" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="525" y1="15" x2="525" y2="30" stroke="#C8963E" stroke-width="1.5"/></svg></div>'
+    +'<div class="pedigree-grid" style="max-width:400px"><div style="grid-column:1/3">'+pedNodeHtml(ped.sire,'Bapak (Sire)')+'</div><div style="grid-column:3/5">'+pedNodeHtml(ped.dam,'Ibu (Dam)')+'</div></div>'
+    +'<div class="flex justify-center my-2"><svg width="400" height="30" viewBox="0 0 400 30" style="max-width:100%"><line x1="100" y1="0" x2="100" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="300" y1="0" x2="300" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="100" y1="15" x2="300" y2="15" stroke="#C8963E" stroke-width="1.5"/><line x1="200" y1="15" x2="200" y2="30" stroke="#C8963E" stroke-width="1.5"/></svg></div>'
+    +'<div class="flex justify-center"><div class="ped-line" style="border-color:#1B4332;border-width:2px;min-width:180px;background:#F0F7F0;gap:4px">'+mainFoto+'<div class="ring" style="color:#1B4332;font-size:13px">'+esc(ped.bird.noRing)+'</div><div class="pname" style="font-size:12px;font-weight:600">'+esc(ped.bird.nama)+'</div><div class="text-xs text-fm-muted">'+esc(ped.bird.jenisMurai)+' '+jkBadge(ped.bird.jk)+'</div></div></div>';
+}
+
+/* ===== PENJODOHAN ===== */
+function renderPenjodohanPage(){
+  var list=getPasangan();var rows='';
+  if(!list.length){rows='<div class="p-8 text-center text-fm-muted text-sm">Belum ada data pasangan</div>';}
+  else{
+    rows='<div class="tbl-wrap"><table class="dt"><thead><tr><th>ID Kandang</th><th>Indukan Jantan</th><th>Indukan Betina</th><th>Tgl Pasang</th><th>Status</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+    for(var i=0;i<list.length;i++){
+      var p=list[i],j=findBurung(p.jantan),b=findBurung(p.betina);
+      rows+='<tr><td class="font-semibold text-fm-accent">'+esc(p.idKandang)+'</td>'
+        +'<td>'+(j?'<div class="flex items-center gap-2">'+fotoThumbHtml(j.foto)+esc(j.noRing+' — '+j.nama)+'</div>':'<span class="text-red-500">Dihapus</span>')+'</td>'
+        +'<td>'+(b?'<div class="flex items-center gap-2">'+fotoThumbHtml(b.foto)+esc(b.noRing+' — '+b.nama)+'</div>':'<span class="text-red-500">Dihapus</span>')+'</td>'
+        +'<td class="whitespace-nowrap">'+fmtDate(p.tglPasang)+'</td><td>'+statusBadge(p.status)+'</td>'
+        +'<td class="no-print"><button class="btn btn-sm btn-outline" onclick="openPasanganForm(\''+p.idKandang+'\')"><i class="fas fa-pen"></i></button> <button class="btn btn-sm btn-danger" onclick="deletePasangan(\''+p.idKandang+'\')"><i class="fas fa-trash"></i></button></td></tr>';
+    }
+    rows+='</tbody></table></div>';
+  }
+  return '<div class="flex flex-wrap items-center justify-between gap-3 mb-4"><p class="text-sm text-fm-muted">Kelola pasangan indukan di setiap kandang.</p><button class="btn btn-primary" onclick="openPasanganForm()"><i class="fas fa-plus"></i>Tambah Pasangan</button></div><div class="data-card"><div class="card-body">'+rows+'</div></div>';
+}
+
+function openPasanganForm(id){
+  var p=id?findPasangan(id):null;var isEdit=!!p;
+  var jOptions=isEdit?getBurung().filter(function(b){return b.jk==='Jantan';}):getBurung().filter(function(b){return b.jk==='Jantan'&&b.status==='Siap Ternak';});
+  var bOptions=isEdit?getBurung().filter(function(b){return b.jk==='Betina';}):getBurung().filter(function(b){return b.jk==='Betina'&&b.status==='Siap Ternak';});
+  var nextId=isEdit?p.idKandang:'K-'+String(getPasangan().length+1).padStart(3,'0');
+  var body='<div class="fg-row"><div class="fg"><label>ID Kandang *</label><input id="fp-id" value="'+esc(nextId)+'" '+(isEdit?'readonly style="background:#f0ece2"':'')+'><div class="err">ID sudah digunakan</div></div><div class="fg"><label>Tanggal Pasang</label><input id="fp-tgl" type="date" value="'+(isEdit?p.tglPasang:today())+'"></div></div>'
+    +'<div class="fg-row"><div class="fg"><label>Indukan Jantan *</label><select id="fp-jantan"><option value="">-- Pilih Jantan --</option>';
+  for(var i=0;i<jOptions.length;i++){body+='<option value="'+jOptions[i].noRing+'" '+(isEdit&&p.jantan===jOptions[i].noRing?'selected':'')+'>'+esc(jOptions[i].noRing+' — '+jOptions[i].nama)+'</option>';}
+  body+='</select><div class="err">Wajib dipilih</div></div><div class="fg"><label>Indukan Betina *</label><select id="fp-betina"><option value="">-- Pilih Betina --</option>';
+  for(var i=0;i<bOptions.length;i++){body+='<option value="'+bOptions[i].noRing+'" '+(isEdit&&p.betina===bOptions[i].noRing?'selected':'')+'>'+esc(bOptions[i].noRing+' — '+bOptions[i].nama)+'</option>';}
+  body+='</select><div class="err">Wajib dipilih</div></div></div><div class="fg"><label>Status Jodoh</label><select id="fp-status">';
+  var stArr2=['Proses','Bertelur','Bongkar'];for(var i=0;i<stArr2.length;i++){body+='<option value="'+stArr2[i]+'" '+(isEdit&&p.status===stArr2[i]?'selected':'')+'>'+stArr2[i]+'</option>';}
+  body+='</select></div>';
+  openModal((isEdit?'Edit':'Tambah')+' Pasangan Kandang',body,'<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="savePasangan(\''+(id||'')+'\')">Simpan</button>');
+}
+
+function savePasangan(oldId){
+  var idKandang=document.getElementById('fp-id').value.trim(),jantan=document.getElementById('fp-jantan').value,betina=document.getElementById('fp-betina').value,tglPasang=document.getElementById('fp-tgl').value,status=document.getElementById('fp-status').value;
+  var valid=true;
+  if(!idKandang||(!oldId&&getPasangan().find(function(p){return p.idKandang===idKandang;}))){document.getElementById('fp-id').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('fp-id').parentElement.classList.remove('has-err');}
+  if(!jantan){document.getElementById('fp-jantan').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('fp-jantan').parentElement.classList.remove('has-err');}
+  if(!betina){document.getElementById('fp-betina').parentElement.classList.add('has-err');valid=false;}else{document.getElementById('fp-betina').parentElement.classList.remove('has-err');}
+  if(!valid)return;
+  var list=getPasangan();var data={idKandang:idKandang,jantan:jantan,betina:betina,tglPasang:tglPasang,status:status||'Proses'};
+  if(oldId){
+    var idx=list.findIndex(function(p){return p.idKandang===oldId;});if(idx>=0)list[idx]=data;
+    if(oldId!==idKandang){var pr=getProduksi();pr.forEach(function(p){if(p.idKandang===oldId)p.idKandang=idKandang;});setProduksi(pr);}
+  }else{
+    list.push(data);
+    if(status==='Bertelur'){var bl=getBurung();bl.forEach(function(b){if(b.noRing===jantan||b.noRing===betina)b.status='Mengeram';});setBurung(bl);}
+  }
+  setPasangan(list);closeModal();toast(oldId?'Pasangan diperbarui':'Pasangan ditambahkan');renderPage();
+}
+function deletePasangan(id){
+  openModal('Hapus Pasangan','<div class="text-center py-4"><p class="font-semibold">Hapus pasangan '+esc(id)+'?</p></div>',
+  '<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-danger" onclick="setPasangan(getPasangan().filter(function(p){return p.idKandang!==\''+id+'\';}));setProduksi(getProduksi().filter(function(p){return p.idKandang!==\''+id+'\';}));closeModal();toast(\'Pasangan dihapus\',\'warn\');renderPage();">Hapus</button>');
+}
+
+/* ===== PRODUKSI & ANAKAN ===== */
+function renderProduksiPage(){
+  var list=getProduksi();var rows='';
+  if(!list.length){rows='<div class="p-8 text-center text-fm-muted text-sm">Belum ada data produksi</div>';}
+  else{
+    rows='<div class="tbl-wrap"><table class="dt"><thead><tr><th>Kandang</th><th>Siklus</th><th>Telur</th><th>Tgl Mengeram</th><th>Est. Menetas</th><th>Menetas</th><th>Zong</th><th>Anakan</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+    for(var i=0;i<list.length;i++){
+      var p=list[i];
+      var anakHtml='-';
+      if(p.anakan&&p.anakan.length){
+        anakHtml='<div class="flex -space-x-2">';
+        for(var j=0;j<p.anakan.length;j++){var ab=findBurung(p.anakan[j].noRing);anakHtml+=fotoThumbHtml(ab?ab.foto:'');}
+        anakHtml+='</div>';
+      }
+      rows+='<tr><td class="font-semibold text-fm-accent">'+esc(p.idKandang)+'</td><td>'+p.siklusKe+'</td><td>'+(p.jmlTelur||0)+'</td><td class="whitespace-nowrap">'+fmtDate(p.tglMengeram)+'</td><td class="whitespace-nowrap text-fm-accent font-semibold">'+fmtDate(p.estMenetas)+'</td><td class="font-semibold text-emerald-700">'+(p.jmlMenetas||0)+'</td><td class="text-red-600">'+(p.jmlZong||0)+'</td><td>'+anakHtml+'</td><td class="no-print"><button class="btn btn-sm btn-outline" onclick="openProduksiForm(\''+p.id+'\')"><i class="fas fa-pen"></i></button> <button class="btn btn-sm btn-danger" onclick="deleteProduksi(\''+p.id+'\')"><i class="fas fa-trash"></i></button></td></tr>';
+    }
+    rows+='</tbody></table></div>';
+  }
+  return '<div class="flex flex-wrap items-center justify-between gap-3 mb-4"><p class="text-sm text-fm-muted">Catat siklus bertelur dan daftarkan anakan.</p><button class="btn btn-primary" onclick="openProduksiForm()"><i class="fas fa-plus"></i>Tambah Produksi</button></div><div class="data-card"><div class="card-body">'+rows+'</div></div>';
+}
+
+function openProduksiForm(id){
+  var p=id?getProduksi().find(function(x){return x.id===id;}):null;var isEdit=!!p;
+  var body='<div class="fg-row"><div class="fg"><label>ID Kandang *</label><select id="fpr-kandang" '+(isEdit?'disabled':'')+' onchange="onKandangChange()"><option value="">-- Pilih Kandang --</option>';
+  var pList=getPasangan();for(var i=0;i<pList.length;i++){var pp=pList[i],j=findBurung(pp.jantan),b=findBurung(pp.betina);body+='<option value="'+pp.idKandang+'" '+(isEdit&&p.idKandang===pp.idKandang?'selected':'')+'>'+esc(pp.idKandang+' — '+(j?j.nama:'?')+' x '+(b?b.nama:'?'))+'</option>';}
+  body+='</select><div class="err">Wajib dipilih</div></div><div class="fg"><label>Siklus Ke-</label><input id="fpr-siklus" type="number" min="1" value="'+(isEdit?p.siklusKe:1)+'"></div></div>'
+    +'<div class="fg-row"><div class="fg"><label>Tanggal Bertelur</label><input id="fpr-tglTelur" type="date" value="'+(isEdit?p.tglBertelur:'')+'"></div><div class="fg"><label>Jumlah Telur</label><input id="fpr-jmlTelur" type="number" min="0" value="'+(isEdit?p.jmlTelur:0)+'"></div></div>'
+    +'<div class="fg-row"><div class="fg"><label>Tanggal Mengeram</label><input id="fpr-tglMengeram" type="date" value="'+(isEdit?p.tglMengeram:'')+'" oninput="updateEstMenetas()"></div><div class="fg"><label>Estimasi Menetas</label><input id="fpr-estMenetas" type="date" readonly style="background:#f0ece2;color:#C8963E;font-weight:600" value="'+(isEdit?p.estMenetas:'')+'"></div></div>'
+    +'<div class="fg-row"><div class="fg"><label>Jumlah Menetas</label><input id="fpr-jmlMenetas" type="number" min="0" value="'+(isEdit?p.jmlMenetas:0)+'" oninput="generateAnakanRows()"></div><div class="fg"><label>Jumlah Zong</label><input id="fpr-jmlZong" type="number" min="0" value="'+(isEdit?p.jmlZong:0)+'"></div></div>'
+    +'<div class="fg"><label>Tanggal Menetas Aktual</label><input id="fpr-tglAktual" type="date" value="'+(isEdit?p.tglMenetasAktual:'')+'"></div>'
+    +'<div id="anakan-section" class="mt-4" style="display:'+(isEdit&&p.jmlMenetas>0?'block':'none')+'"><div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4"><div class="flex items-center gap-2 mb-3"><i class="fas fa-baby text-emerald-600"></i><span class="font-semibold text-emerald-800 text-sm">Input Data Anakan</span></div><div id="anakan-rows"></div></div></div>';
+  openModal((isEdit?'Edit':'Tambah')+' Data Produksi',body,'<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-primary" onclick="saveProduksi(\''+(id||'')+'\')">Simpan</button>');
+  if(!isEdit){setTimeout(function(){var ks=document.getElementById('fpr-kandang');if(ks.value)onKandangChange();ks.addEventListener('change',onKandangChange);},50);}
+  else if(p&&p.jmlMenetas>0){setTimeout(function(){generateAnakanRows(p.anakan||[]);},50);}
+}
+
+function onKandangChange(){
+  var kid=document.getElementById('fpr-kandang').value;var pr=getProduksi().filter(function(x){return x.idKandang===kid;});
+  document.getElementById('fpr-siklus').value=pr.length?Math.max.apply(null,pr.map(function(x){return x.siklusKe;}))+1:1;
+}
+function updateEstMenetas(){var t=document.getElementById('fpr-tglMengeram').value;document.getElementById('fpr-estMenetas').value=t?addDays(t,14):'';}
+
+function generateAnakanRows(existingAnakan){
+  var jml=parseInt(document.getElementById('fpr-jmlMenetas').value)||0;
+  var section=document.getElementById('anakan-section'),container=document.getElementById('anakan-rows');
+  if(jml<=0){section.style.display='none';return;}section.style.display='block';
+  var kid=document.getElementById('fpr-kandang').value;var pas=findPasangan(kid);
+  var dj='Medan';if(pas){var bp=findBurung(pas.jantan);if(bp)dj=bp.jenisMurai;}
+  var html='';
+  var jenisArr=['Medan','Nias','Balak','Lahat','Aceh','Kalimantan','Lainnya'];
+  for(var i=0;i<jml;i++){
+    var ex=(existingAnakan&&existingAnakan[i])?existingAnakan[i]:null;
+    var ar=ex?ex.noRing:genRing();
+    var ef=ex?(ex.foto||''):'';
+    var jOpts='<option value="Jantan" '+(ex&&ex.jk==='Jantan'?'selected':'')+'>Jantan</option><option value="Betina" '+(ex&&ex.jk==='Betina'?'selected':'')+'>Betina</option>';
+    var mnOpts='';
+    for(var j=0;j<jenisArr.length;j++){mnOpts+='<option value="'+jenisArr[j]+'" '+((ex?ex.jenisMurai:dj)===jenisArr[j]?'selected':'')+'>'+jenisArr[j]+'</option>';}
+    html+='<div class="anakan-row"><h4><i class="fas fa-feather-alt mr-1"></i>Anakan #'+(i+1)+'</h4><div class="flex flex-wrap items-start gap-4">'+fotoUploadHtml('anakan-foto-'+i,80,ef)
+      +'<div class="flex-1 min-w-[180px]"><div class="fg-row"><div class="fg"><label>No. Ring *</label><input class="anakan-ring" value="'+esc(ar)+'"><div class="err">Wajib diisi</div></div><div class="fg"><label>Nama</label><input class="anakan-nama" value="'+(ex?esc(ex.nama):'Anakan '+(i+1))+'"></div></div><div class="fg-row"><div class="fg"><label>Jenis Kelamin</label><select class="anakan-jk">'+jOpts+'</select></div><div class="fg"><label>Jenis Murai</label><select class="anakan-jenis">'+mnOpts+'</select></div></div></div></div></div>';
+  }
+  container.innerHTML=html;
+}
+
+function saveProduksi(oldId){
+  var idKandang=document.getElementById('fpr-kandang').value;
+  var siklusKe=parseInt(document.getElementById('fpr-siklus').value)||1;
+  var tglBertelur=document.getElementById('fpr-tglTelur').value;
+  var jmlTelur=parseInt(document.getElementById('fpr-jmlTelur').value)||0;
+  var tglMengeram=document.getElementById('fpr-tglMengeram').value;
+  var estMenetas=document.getElementById('fpr-estMenetas').value;
+  var jmlMenetas=parseInt(document.getElementById('fpr-jmlMenetas').value)||0;
+  var jmlZong=parseInt(document.getElementById('fpr-jmlZong').value)||0;
+  var tglMenetasAktual=document.getElementById('fpr-tglAktual').value;
+  if(!idKandang){document.getElementById('fpr-kandang').parentElement.classList.add('has-err');return;}document.getElementById('fpr-kandang').parentElement.classList.remove('has-err');
+  var anakan=[];
+  var ri=document.querySelectorAll('.anakan-ring'),ni=document.querySelectorAll('.anakan-nama'),ji=document.querySelectorAll('.anakan-jk'),zi=document.querySelectorAll('.anakan-jenis');
+  var av=true;
+  for(var i=0;i<ri.length;i++){
+    var ring=ri[i].value.trim();
+    if(!ring){ri[i].parentElement.classList.add('has-err');av=false;}else{ri[i].parentElement.classList.remove('has-err');}
+    var fotoEl=document.getElementById('anakan-foto-'+i);
+    anakan.push({noRing:ring,nama:ni[i].value.trim(),jk:ji[i].value,jenisMurai:zi[i].value,tglMenetas:tglMenetasAktual||estMenetas,foto:fotoEl?fotoEl.value:''});
+  }
+  if(!av)return;
+  var allR={};getBurung().forEach(function(b){allR[b.noRing]=true;});
+  for(var i=0;i<anakan.length;i++){if(!oldId&&allR[anakan[i].noRing]){toast('No. Ring '+anakan[i].noRing+' sudah ada','err');av=false;}allR[anakan[i].noRing]=true;}
+  if(!av)return;
+  var list=getProduksi();var newId=oldId||'PROD-'+String(Date.now());
+  var data={id:newId,idKandang:idKandang,siklusKe:siklusKe,tglBertelur:tglBertelur,jmlTelur:jmlTelur,tglMengeram:tglMengeram,estMenetas:estMenetas,jmlMenetas:jmlMenetas,jmlZong:jmlZong,tglMenetasAktual:tglMenetasAktual,anakan:jmlMenetas>0?anakan:[]};
+  if(oldId){
+    var op=list.find(function(x){return x.id===oldId;});
+    if(op&&op.anakan){
+      var delRings={};op.anakan.forEach(function(a){delRings[a.noRing]=true;});
+      setBurung(getBurung().filter(function(b){return !delRings[b.noRing];}));
+      setSilsilah(getSilsilah().filter(function(s){return !delRings[s.noRing];}));
+    }
+    var idx=list.findIndex(function(x){return x.id===oldId;});if(idx>=0)list[idx]=data;
+  }else{list.push(data);}
+  setProduksi(list);
+  if(jmlMenetas>0){
+    var pas=findPasangan(idKandang);var nb=pas?pas.jantan:'',ni2=pas?pas.betina:'';
+    var mg=0;
+    if(nb){var sb=findSilsilah(nb);if(sb){var g=parseInt(sb.generasi.replace('F',''))||0;if(g>mg)mg=g;}}
+    if(ni2){var si=findSilsilah(ni2);if(si){var g2=parseInt(si.generasi.replace('F',''))||0;if(g2>mg)mg=g2;}}
+    var ag='F'+(mg+1);var bl=getBurung();var sl=getSilsilah();
+    for(var i=0;i<anakan.length;i++){
+      var a=anakan[i];
+      bl.push({noRing:a.noRing,nama:a.nama,jk:a.jk,jenisMurai:a.jenisMurai,tglMenetas:a.tglMenetas,status:'Anakan',catatan:'Anakan dari kandang '+idKandang,foto:a.foto});
+      sl.push({noRing:a.noRing,noRingBapak:nb,noRingIbu:ni2,generasi:ag});
+    }
+    setBurung(bl);setSilsilah(sl);
+  }
+  closeModal();toast(oldId?'Data produksi diperbarui':'Data produksi ditambahkan'+(jmlMenetas>0?' + '+jmlMenetas+' anakan terdaftar':''));renderPage();
+}
+function deleteProduksi(id){
+  openModal('Hapus Produksi','<div class="text-center py-4"><p class="font-semibold">Hapus data produksi ini?</p></div>',
+  '<button class="btn btn-outline" onclick="closeModal()">Batal</button><button class="btn btn-danger" onclick="confirmDeleteProd(\''+id+'\')">Hapus</button>');
+}
+function confirmDeleteProd(id){
+  var pr=getProduksi().find(function(x){return x.id===id;});
+  if(pr&&pr.anakan){
+    var delR={};pr.anakan.forEach(function(a){delR[a.noRing]=true;});
+    setBurung(getBurung().filter(function(b){return !delR[b.noRing];}));
+    setSilsilah(getSilsilah().filter(function(s){return !delR[s.noRing];}));
+  }
+  setProduksi(getProduksi().filter(function(x){return x.id!==id;}));
+  closeModal();toast('Data produksi dihapus','warn');renderPage();
+}
+
+/* ===== SERTIFIKAT ===== */
+function renderSertifikatPage(){
+  var opts='';var bList=getBurung();for(var i=0;i<bList.length;i++){opts+='<option value="'+bList[i].noRing+'">'+esc(bList[i].noRing+' — '+bList[i].nama+' ('+bList[i].jk+', '+bList[i].jenisMurai+')')+'</option>';}
+  return '<div class="data-card mb-6 no-print"><div class="card-head"><span class="font-semibold text-fm-gd text-sm">Pilih Burung untuk Sertifikat</span></div><div class="card-body p-4"><div class="flex flex-wrap items-end gap-3"><div class="fg" style="margin-bottom:0;min-width:250px;flex:1"><label>No. Ring Burung</label><select id="cert-select" onchange="buildCertificate()"><option value="">-- Pilih Burung --</option>'+opts+'</select></div><button class="btn btn-primary" onclick="printCertificate()"><i class="fas fa-print"></i>Cetak Sertifikat</button></div></div></div><div id="cert-container"></div>';
+}
+
+function certPedCell(p){
+  if(!p)return '<td style="color:#7A7568;padding:8px"><div class="cert-ped-foto-empty"><i class="fas fa-dove"></i></div><div style="font-size:10px;color:#aaa;margin-top:3px">Tidak tercatat</div></td>';
+  var s=findSilsilah(p.bird.noRing);
+  var fHtml=(p.foto&&p.foto.length>10)?'<img src="'+p.foto+'" class="cert-ped-foto">':'<div class="cert-ped-foto-empty"><i class="fas fa-dove"></i></div>';
+  return '<td style="padding:8px">'+fHtml+'<div style="font-weight:700;font-size:11px;margin-top:3px">'+esc(p.bird.noRing)+'</div><div style="font-size:10px;color:#7A7568">'+esc(p.bird.nama)+'</div>'+(s?'<div style="font-size:9px;color:#C8963E;font-weight:600">'+esc(s.generasi)+'</div>':'')+'</td>';
+}
+
+function buildCertificate(){
+  var ring=document.getElementById('cert-select').value;var container=document.getElementById('cert-container');
+  if(!ring){container.innerHTML='';return;}
+  var bird=findBurung(ring);
+  if(!bird){container.innerHTML='<div class="text-center text-fm-muted py-8">Burung tidak ditemukan</div>';return;}
+  var sil=findSilsilah(ring);var ped=getPedigree(ring,2);
+  var hasFoto=bird.foto&&bird.foto.length>10;
+  var fotoMain=hasFoto?'<img src="'+bird.foto+'" class="cert-foto-main" alt="foto">':'<div class="cert-foto-main-empty"><i class="fas fa-dove" style="font-size:32px"></i><span style="font-size:10px;margin-top:8px">Tidak ada foto</span></div>';
+  var subjFoto=hasFoto?'<img src="'+bird.foto+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #1B4332">':'<div style="width:36px;height:36px;border-radius:50%;background:#F0ECE2;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:14px"><i class="fas fa-dove"></i></div>';
+  container.innerHTML='<div id="cert-wrap"><div class="cert-header"><div style="font-size:11px;letter-spacing:3px;color:#C8963E;font-weight:600;text-transform:uppercase;margin-bottom:4px">Sertifikat Silsilah</div><h2>MURAI BATU</h2><p>Kartu Trah & Pedigree Certificate — BES EXOTIC FARM</p></div>'
+    +'<div class="cert-info-row">'+fotoMain
+    +'<dl class="cert-bird-info"><dt>No. Ring</dt><dd>'+esc(bird.noRing)+'</dd><dt>Nama Burung</dt><dd>'+esc(bird.nama)+'</dd><dt>Jenis Kelamin</dt><dd>'+bird.jk+'</dd><dt>Jenis Murai</dt><dd>'+bird.jenisMurai+'</dd><dt>Tgl Menetas</dt><dd>'+fmtDate(bird.tglMenetas)+'</dd><dt>Generasi</dt><dd>'+(sil?sil.generasi:'-')+'</dd><dt>Status</dt><dd>'+bird.status+'</dd><dt>Catatan</dt><dd>'+(esc(bird.catatan)||'-')+'</dd></dl></div>'
+    +'<h3 style="font-family:\'DM Serif Display\',serif;font-size:15px;color:#1B4332;margin-bottom:10px;text-align:center">Bagan Pedigree 3 Generasi</h3>'
+    +'<table class="cert-ped-table"><tr><td class="gen-label">Generasi 2</td>'+certPedCell(ped?ped.sire?ped.sire.sire:null:null)+certPedCell(ped?ped.sire?ped.sire.dam:null:null)+certPedCell(ped?ped.dam?ped.dam.sire:null:null)+certPedCell(ped?ped.dam?ped.dam.dam:null:null)+'</tr>'
+    +'<tr><td class="gen-label">Generasi 1</td>'+certPedCell(ped?ped.sire:null)+'<td colspan="2" style="border:none;background:transparent"></td>'+certPedCell(ped?ped.dam:null)+'</tr>'
+    +'<tr><td class="gen-label">Subjek</td><td colspan="4" style="font-weight:700;color:#1B4332;font-size:13px"><div class="flex items-center justify-center gap-3">'+subjFoto+esc(bird.noRing+' — '+bird.nama+' ('+bird.jenisMurai+', '+bird.jk+')')+'</div></td></tr></table>'
+    +'<div class="cert-footer"><div>Dicetak pada: '+new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+'</div><div style="margin-top:4px;font-size:10px;color:#aaa">BES EXOTIC FARM — Sistem Manajemen Peternakan & Silsilah Murai Batu</div></div></div>';
+}
+function printCertificate(){if(!document.getElementById('cert-wrap')){toast('Pilih burung terlebih dahulu','warn');return;}window.print();}
+
+/* ===== DATA SAMPEL ===== */
+function seedData(){
+  if(localStorage.getItem('mf_seeded'))return;
+  var burung=[
+    {noRing:'MB-001',nama:'Raja Medan',jk:'Jantan',jenisMurai:'Medan',tglMenetas:'2022-01-15',status:'Siap Ternak',catatan:'Postur besar, suara rolled panjang, mental tarung tinggi',foto:''},
+    {noRing:'MB-002',nama:'Ratu Nias',jk:'Betina',jenisMurai:'Nias',tglMenetas:'2022-03-20',status:'Siap Ternak',catatan:'Badan padat, ekor panjang 18cm, warna hitam mengkilap',foto:''},
+    {noRing:'MB-003',nama:'Jago Balak',jk:'Jantan',jenisMurai:'Balak',tglMenetas:'2021-06-10',status:'Siap Ternak',catatan:'Balak dada lebar, suara kasar tapis, volume keras',foto:''},
+    {noRing:'MB-004',nama:'Sari Lambok',jk:'Betina',jenisMurai:'Medan',tglMenetas:'2021-08-25',status:'Mabung',catatan:'Ekornya 20cm, lincah, rajin ngurak',foto:''},
+    {noRing:'MB-005',nama:'F1 Raja Jr',jk:'Jantan',jenisMurai:'Medan',tglMenetas:'2023-05-01',status:'Siap Ternak',catatan:'Anakan Raja Medan x Ratu Nias',foto:''},
+    {noRing:'MB-006',nama:'F1 Sari Jr',jk:'Betina',jenisMurai:'Medan',tglMenetas:'2023-05-03',status:'Anakan',catatan:'Anakan Raja Medan x Ratu Nias, ekor 12cm',foto:''},
+    {noRing:'MB-007',nama:'Lahat Prima',jk:'Jantan',jenisMurai:'Lahat',tglMenetas:'2022-11-10',status:'Siap Ternak',catatan:'Variasi isian banyak, mental stabil',foto:''}
+  ];
+  setBurung(burung);
+  setSilsilah([
+    {noRing:'MB-005',noRingBapak:'MB-001',noRingIbu:'MB-002',generasi:'F1'},
+    {noRing:'MB-006',noRingBapak:'MB-001',noRingIbu:'MB-002',generasi:'F1'}
+  ]);
+  setPasangan([
+    {idKandang:'K-001',jantan:'MB-001',betina:'MB-002',tglPasang:'2024-01-01',status:'Bertelur'},
+    {idKandang:'K-002',jantan:'MB-003',betina:'MB-004',tglPasang:'2024-02-15',status:'Proses'}
+  ]);
+  setProduksi([
+    {id:'PROD-1',idKandang:'K-001',siklusKe:1,tglBertelur:'2024-01-15',jmlTelur:3,tglMengeram:'2024-01-18',estMenetas:'2024-02-01',jmlMenetas:2,jmlZong:1,tglMenetasAktual:'2024-02-01',anakan:[
+      {noRing:'MB-005',nama:'F1 Raja Jr',jk:'Jantan',jenisMurai:'Medan',tglMenetas:'2024-02-01',foto:''},
+      {noRing:'MB-006',nama:'F1 Sari Jr',jk:'Betina',jenisMurai:'Medan',tglMenetas:'2024-02-01',foto:''}
+    ]}
+  ]);
+  localStorage.setItem('mf_seeded','1');
+}
+
+/* ===== MULAI ===== */
+seedData();
+renderPage();
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>
